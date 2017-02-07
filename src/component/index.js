@@ -1,10 +1,10 @@
-import React, { PureComponent, PropTypes } from 'react'
+import React, { Component, PropTypes } from 'react'
 import classNames from 'classnames'
 import Check from './check'
 import X from './x'
 import { pointerCoord } from './util'
 
-export default class Toggle extends PureComponent {
+export default class Toggle extends Component {
   constructor (props) {
     super(props)
     this.handleClick = this.handleClick.bind(this)
