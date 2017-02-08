@@ -63,6 +63,7 @@ var Toggle = function (_Component) {
     value: function componentWillReceiveProps(nextProps) {
       if ('checked' in nextProps) {
         this.setState({ checked: !!nextProps.checked });
+        this.previouslyChecked = !!nextProps.checked;
       }
     }
   }, {
@@ -83,53 +84,40 @@ var Toggle = function (_Component) {
     key: 'handleTouchStart',
     value: function handleTouchStart(event) {
       this.startX = (0, _util.pointerCoord)(event).x;
-      this.activated = true;
+      this.touchStarted = true;
     }
   }, {
     key: 'handleTouchMove',
     value: function handleTouchMove(event) {
-      if (!this.activated) return;
-      this.moved = true;
+      if (!this.touchStarted) return;
+      this.touchMoved = true;
 
-      if (this.startX) {
+      if (this.startX != null) {
         var currentX = (0, _util.pointerCoord)(event).x;
         if (this.state.checked && currentX + 15 < this.startX) {
           this.setState({ checked: false });
           this.startX = currentX;
-          this.activated = true;
-        } else if (currentX - 15 > this.startX) {
+        } else if (!this.state.checked && currentX - 15 > this.startX) {
           this.setState({ checked: true });
           this.startX = currentX;
-          this.activated = currentX < this.startX + 5;
         }
       }
     }
   }, {
     key: 'handleTouchEnd',
     value: function handleTouchEnd(event) {
-      if (!this.moved) return;
+      if (!this.touchMoved) return;
       var checkbox = this.input;
       event.preventDefault();
 
-      if (this.startX) {
-        var endX = (0, _util.pointerCoord)(event).x;
-        if (this.previouslyChecked === true && this.startX + 4 > endX) {
-          if (this.previouslyChecked !== this.state.checked) {
-            this.setState({ checked: false });
-            this.previouslyChecked = this.state.checked;
-            checkbox.click();
-          }
-        } else if (this.startX - 4 < endX) {
-          if (this.previouslyChecked !== this.state.checked) {
-            this.setState({ checked: true });
-            this.previouslyChecked = this.state.checked;
-            checkbox.click();
-          }
+      if (this.startX != null) {
+        if (this.previouslyChecked !== this.state.checked) {
+          checkbox.click();
         }
 
-        this.activated = false;
+        this.touchStarted = false;
         this.startX = null;
-        this.moved = false;
+        this.touchMoved = false;
       }
     }
   }, {
