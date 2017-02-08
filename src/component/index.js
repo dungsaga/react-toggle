@@ -42,51 +42,38 @@ export default class Toggle extends Component {
 
   handleTouchStart (event) {
     this.startX = pointerCoord(event).x
-    this.activated = true
+    this.touchStarted = true
   }
 
   handleTouchMove (event) {
-    if (!this.activated) return
-    this.moved = true
+    if (!this.touchStarted) return
+    this.touchMoved = true
 
-    if (this.startX) {
+    if (this.startX != null) {
       let currentX = pointerCoord(event).x
       if (this.state.checked && currentX + 15 < this.startX) {
         this.setState({ checked: false })
         this.startX = currentX
-        this.activated = true
-      } else if (currentX - 15 > this.startX) {
+      } else if (!this.state.checked && currentX - 15 > this.startX) {
         this.setState({ checked: true })
         this.startX = currentX
-        this.activated = (currentX < this.startX + 5)
       }
     }
   }
 
   handleTouchEnd (event) {
-    if (!this.moved) return
+    if (!this.touchMoved) return
     const checkbox = this.input
     event.preventDefault()
 
-    if (this.startX) {
-      let endX = pointerCoord(event).x
-      if (this.previouslyChecked === true && this.startX + 4 > endX) {
-        if (this.previouslyChecked !== this.state.checked) {
-          this.setState({ checked: false })
-          this.previouslyChecked = this.state.checked
-          checkbox.click()
-        }
-      } else if (this.startX - 4 < endX) {
-        if (this.previouslyChecked !== this.state.checked) {
-          this.setState({ checked: true })
-          this.previouslyChecked = this.state.checked
-          checkbox.click()
-        }
+    if (this.startX != null) {
+      if (this.previouslyChecked !== this.state.checked) {
+        checkbox.click()
       }
 
-      this.activated = false
+      this.touchStarted = false
       this.startX = null
-      this.moved = false
+      this.touchMoved = false
     }
   }
 
